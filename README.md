@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Feliks
+
+## Calorie Guessing Game
+
+Feliks is an interactive web application designed to help users improve their nutritional awareness through an engaging calorie-guessing game. The primary goal is to help users familiarize themselves with the calorie content of everyday food items through gameplay, making nutritional education fun and memorable.
+
+<img alt="Feliks App" src="">
+
+## Features
+
+- **Calorie Guessing Challenges**: Test your knowledge by guessing the calorie content of various food items
+- **Instant Feedback**: Learn immediately how close your guess was to the actual value
+- **Nutritional Insights**: Gain valuable knowledge about common foods' caloric content
+- **Clean, Modern UI**: Enjoy a responsive design that works across devices
+
+## Tech Stack
+
+- **Frontend**: Next.js 15 with React 19
+- **Styling**: Tailwind CSS 4 with shadcn/ui
+- **Database**: Neon PostgreSQL (serverless)
+- **ORM**: Drizzle
+- **Development**: TypeScript, ESLint
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js (v18 or later)
+- npm/yarn/pnpm/bun
+- Neon PostgreSQL database
+- Edamam API key and app ID (for food item data)
+
+### Installation
+
+1. Clone the repository
+
+```bash
+git clone https://github.com/bezerye/feliks.git
+cd feliks
+```
+
+2. Install dependencies
+
+```bash
+npm install
+```
+
+3. Set up environment variables: Create a `.env.local` file with the following variables:
+
+```.env
+DATABASE_URL=your_neon_database_connection_string
+EDAMAM_API_KEY=your_edamam_api_key
+EDAMAM_APP_ID=your_edamam_app_id
+```
+
+4. Seed the database with food items
+
+```bash
+npm run seed
+```
+
+5. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Open [http://localhost:3000](http://localhost:3000) to see the application
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Roadmap
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- User Profiles: Create personal accounts to track progress
+- Leaderboards: Compete with others on accuracy and speed
+- Food Categories: Specialized challenges for different food groups
+- Achievements: Unlock badges and rewards for nutritional knowledge
+- Social Sharing: Challenge friends and share results
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions are welcome! Feel free to open issues or submit pull requests.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
