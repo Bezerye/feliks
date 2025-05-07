@@ -17,7 +17,7 @@ export async function getFoodList() {
 export async function deleteFood(id: string) {
   try {
     await db.delete(food).where(eq(food.foodId, id));
-    revalidatePath("/dashbord");
+    revalidatePath("/dashboard");
   } catch (error) {
     console.error("Error deleting food item:", error);
   }
