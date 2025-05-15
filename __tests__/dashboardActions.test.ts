@@ -1,4 +1,8 @@
-import { deleteFood, getFoodList } from "@/actions/dashboardActions";
+import {
+  deleteFood,
+  getFoodList,
+  updateFood,
+} from "@/actions/dashboardActions";
 import { food, Food } from "@/db/schema";
 import db from "@/db";
 import { revalidatePath } from "next/cache";
@@ -38,6 +42,7 @@ jest.mock("@/db", () => ({
   default: {
     select: jest.fn(),
     delete: jest.fn(),
+    update: jest.fn(),
   },
 }));
 
@@ -60,6 +65,13 @@ const mockDeleteChain = () => {
   const where = jest.fn().mockResolvedValue(undefined);
   (db.delete as jest.Mock).mockReturnValue({ where });
   return { where };
+};
+
+const mockUpdateChain = () => {
+  const where = jest.fn().mockResolvedValue(undefined);
+  const set = jest.fn(() => ({ where }));
+  (db.update as jest.Mock).mockReturnValue({ set });
+  return { where, set };
 };
 
 describe("Dashboard Actions", () => {
@@ -106,13 +118,52 @@ describe("Dashboard Actions", () => {
     });
 
     it("should handle errors when deleting food item", async () => {
-      const error = new Error("boom");
+      const error = new Error("fail");
       const where = jest.fn().mockRejectedValue(error);
       (db.delete as jest.Mock).mockReturnValue({ where });
       const logSpy = jest.spyOn(console, "error").mockImplementation();
 
       await expect(deleteFood(foodId)).resolves.toBeUndefined();
       expect(logSpy).toHaveBeenCalledWith("Error deleting food item:", error);
+      expect(revalidatePath).not.toHaveBeenCalled();
+    });
+  });
+  describe("updateFood", () => {
+    const newData = {
+      foodId: "1",
+      name: "Updated Food",
+      calories: 200,
+      protein: "10",
+      fat: "5",
+      carbohydrates: "30",
+    };
+
+    it("should update food item in the database and revalidates on success", async () => {
+      const { where, set } = mockUpdateChain();
+
+      await expect(updateFood(newData)).resolves.toBeUndefined();
+
+      expect(db.update).toHaveBeenCalledWith(food);
+      expect(set).toHaveBeenCalledWith({
+        name: newData.name,
+        calories: newData.calories,
+        protein: newData.protein,
+        fat: newData.fat,
+        carbohydrates: newData.carbohydrates,
+      });
+      expect(where).toHaveBeenCalledWith(eq(food.foodId, newData.foodId));
+      expect(revalidatePath).toHaveBeenCalledWith("/dashboard");
+    });
+
+    it("should handle errors when updating food item", async () => {
+      const error = new Error("fail");
+      const where = jest.fn().mockRejectedValue(error);
+      const set = jest.fn(() => ({ where }));
+      (db.update as jest.Mock).mockReturnValue({ set });
+      const logSpy = jest.spyOn(console, "error").mockImplementation();
+
+      await expect(updateFood(newData)).resolves.toBeUndefined();
+      expect(logSpy).toHaveBeenCalledWith("Error updating food item:", error);
       expect(revalidatePath).not.toHaveBeenCalled();
     });
   });

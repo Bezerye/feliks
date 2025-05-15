@@ -1,5 +1,6 @@
 "use server";
 
+import { FoodUpdateData } from "@/components/Columns";
 import db from "@/db";
 import { food } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -20,5 +21,25 @@ export async function deleteFood(id: string) {
     revalidatePath("/dashboard");
   } catch (error) {
     console.error("Error deleting food item:", error);
+  }
+}
+
+// export async function addFood(data) {}
+
+export async function updateFood(newData: FoodUpdateData) {
+  try {
+    await db
+      .update(food)
+      .set({
+        name: newData.name,
+        calories: newData.calories,
+        protein: newData.protein,
+        fat: newData.fat,
+        carbohydrates: newData.carbohydrates,
+      })
+      .where(eq(food.foodId, newData.foodId));
+    revalidatePath("/dashboard");
+  } catch (error) {
+    console.error("Error updating food item:", error);
   }
 }

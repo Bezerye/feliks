@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Table } from "@tanstack/react-table";
 import { Food } from "@/db/schema";
 import { DataTableColumnHeader } from "./DataTableColumnHeader";
 import { Button } from "@/components/ui/button";
@@ -12,9 +12,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
-import { deleteFood } from "@/actions/dashboardActions";
+import { CircleX, MoreHorizontal, Save } from "lucide-react";
+import { deleteFood, updateFood } from "@/actions/dashboardActions";
 import { toast } from "sonner";
+
+export type FoodUpdateData = {
+  foodId: string;
+  name: string;
+  calories: number;
+  protein: string;
+  fat: string;
+  carbohydrates: string;
+};
 
 function handleDelete(food: Food) {
   toast.promise(deleteFood(food.foodId), {
@@ -23,6 +32,33 @@ function handleDelete(food: Food) {
     error: "Error deleting food item",
   });
 }
+
+const handleEditSave = async (food: Food, table: Table<Food>) => {
+  const newData: FoodUpdateData = {
+    foodId: food.foodId,
+    name: table.options.meta?.editingData.name || "",
+    calories: table.options.meta?.editingData.calories || 0,
+    protein: table.options.meta?.editingData.protein || "",
+    fat: table.options.meta?.editingData.fat || "",
+    carbohydrates: table.options.meta?.editingData.carbohydrates || "",
+  };
+  table.options.meta?.setEditingData({
+    rowIndex: -1,
+    name: "",
+    calories: null,
+    protein: "",
+    fat: "",
+    carbohydrates: "",
+  });
+
+  toast.promise(updateFood(newData), {
+    loading: "Updating food item...",
+    success: () => {
+      return `${food.name} has been edited successfully`;
+    },
+    error: "Error editing food item",
+  });
+};
 
 export const columns: ColumnDef<Food>[] = [
   {
@@ -57,8 +93,39 @@ export const columns: ColumnDef<Food>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const food = row.original;
+      const editing = table.options.meta?.editingData.rowIndex === row.index;
+
+      if (editing) {
+        return (
+          <div className="flex space-x-2">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => {
+                table.options.meta?.setEditingData({
+                  rowIndex: -1,
+                  name: "",
+                  calories: null,
+                  protein: "",
+                  fat: "",
+                  carbohydrates: "",
+                });
+              }}
+            >
+              <CircleX />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => handleEditSave(food, table)}
+            >
+              <Save />
+            </Button>
+          </div>
+        );
+      }
 
       return (
         <DropdownMenu>
@@ -71,7 +138,20 @@ export const columns: ColumnDef<Food>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                table.options.meta?.setEditingData({
+                  rowIndex: row.index,
+                  name: food.name,
+                  calories: food.calories,
+                  protein: food.protein!,
+                  fat: food.fat!,
+                  carbohydrates: food.carbohydrates!,
+                })
+              }
+            >
+              Edit
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleDelete(food)}>
               Delete
             </DropdownMenuItem>
