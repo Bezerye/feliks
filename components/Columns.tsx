@@ -15,15 +15,7 @@ import {
 import { CircleX, MoreHorizontal, Save } from "lucide-react";
 import { deleteFood, updateFood } from "@/actions/dashboardActions";
 import { toast } from "sonner";
-
-export type FoodUpdateData = {
-  foodId: string;
-  name: string;
-  calories: number;
-  protein: string;
-  fat: string;
-  carbohydrates: string;
-};
+import { FoodUpdateType } from "@/lib/zodSchemas";
 
 function handleDelete(food: Food) {
   toast.promise(deleteFood(food.foodId), {
@@ -34,21 +26,21 @@ function handleDelete(food: Food) {
 }
 
 const handleEditSave = async (food: Food, table: Table<Food>) => {
-  const newData: FoodUpdateData = {
+  const newData: FoodUpdateType = {
     foodId: food.foodId,
     name: table.options.meta?.editingData.name || "",
     calories: table.options.meta?.editingData.calories || 0,
-    protein: table.options.meta?.editingData.protein || "",
-    fat: table.options.meta?.editingData.fat || "",
-    carbohydrates: table.options.meta?.editingData.carbohydrates || "",
+    protein: table.options.meta?.editingData.protein || 0,
+    fat: table.options.meta?.editingData.fat || 0,
+    carbohydrates: table.options.meta?.editingData.carbohydrates || 0,
   };
   table.options.meta?.setEditingData({
     rowIndex: -1,
     name: "",
     calories: null,
-    protein: "",
-    fat: "",
-    carbohydrates: "",
+    protein: 0,
+    fat: 0,
+    carbohydrates: 0,
   });
 
   toast.promise(updateFood(newData), {
@@ -108,9 +100,9 @@ export const columns: ColumnDef<Food>[] = [
                   rowIndex: -1,
                   name: "",
                   calories: null,
-                  protein: "",
-                  fat: "",
-                  carbohydrates: "",
+                  protein: 0,
+                  fat: 0,
+                  carbohydrates: 0,
                 });
               }}
             >

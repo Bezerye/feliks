@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import path from "node:path";
 import { Food, food as foodDB } from "./schema";
 import db from "./index";
+import { EdamamFoodSchema } from "@/lib/zodSchemas";
 
 // Read the list of food names from the JSON file
 async function readFoodNamesFromJsonFile() {
@@ -27,20 +28,24 @@ async function getFoodInfo(food: string) {
   try {
     const response = await fetch(url);
     const data = await response.json();
+
+    // Validate the API response with Zod
+    const validatedData = EdamamFoodSchema.parse(data);
     const foodInfo: Partial<Food> = {
-      foodId: data.parsed[0].food.foodId,
-      name: data.parsed[0].food.label,
-      calories: data.parsed[0].food.nutrients.ENERC_KCAL,
-      protein: data.parsed[0].food.nutrients.PROCNT,
-      fat: data.parsed[0].food.nutrients.FAT,
-      carbohydrates: data.parsed[0].food.nutrients.CHOCDF,
-      fiber: data.parsed[0].food.nutrients.FIBTG,
-      category: data.parsed[0].food.category,
-      image: data.parsed[0].food.image,
+      foodId: validatedData.parsed[0].food.foodId,
+      name: validatedData.parsed[0].food.label,
+      calories: validatedData.parsed[0].food.nutrients.ENERC_KCAL,
+      protein: validatedData.parsed[0].food.nutrients.PROCNT as number,
+      fat: validatedData.parsed[0].food.nutrients.FAT,
+      carbohydrates: validatedData.parsed[0].food.nutrients.CHOCDF,
+      fiber: validatedData.parsed[0].food.nutrients.FIBTG,
+      category: validatedData.parsed[0].food.category,
+      image: validatedData.parsed[0].food.image,
     };
     return foodInfo;
   } catch (error) {
-    console.error(error);
+    console.error(`Error processing food "${food}":`, error);
+    return null;
   }
 }
 

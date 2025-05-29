@@ -26,16 +26,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { DataTablePagination } from "./DataTablePagination";
 import { DefaultColumn } from "./EditableColumn";
-
-type EditingData = {
-  rowIndex: number;
-  name: string;
-  calories: number | null;
-  protein: string;
-  fat: string;
-  carbohydrates: string;
-};
-
+import { EditingDataSchema, type EditingDataType } from "@/lib/zodSchemas";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -44,8 +35,8 @@ interface DataTableProps<TData, TValue> {
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
-    editingData: EditingData;
-    setEditingData: (data: EditingData) => void;
+    editingData: EditingDataType;
+    setEditingData: (data: EditingDataType) => void;
   }
 }
 
@@ -55,14 +46,23 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [editingData, setEditingData] = useState<EditingData>({
+  const [editingData, setEditingData] = useState<EditingDataType>({
     rowIndex: -1,
     name: "",
     calories: null,
-    protein: "",
-    fat: "",
-    carbohydrates: "",
+    protein: 0,
+    fat: 0,
+    carbohydrates: 0,
   });
+
+  const setValidatedEditingData = (data: EditingDataType) => {
+    try {
+      const validatedData = EditingDataSchema.parse(data);
+      setEditingData(validatedData);
+    } catch (error) {
+      console.error("Invalid editing data:", error);
+    }
+  };
 
   const table = useReactTable({
     data,
@@ -80,7 +80,7 @@ export function DataTable<TData, TValue>({
     },
     meta: {
       editingData,
-      setEditingData,
+      setEditingData: setValidatedEditingData,
     },
   });
 
