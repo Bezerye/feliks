@@ -60,7 +60,7 @@ export const EdamamFoodSchema = z.object({
     z.object({
       food: z.object({
         foodId: z.string(),
-        label: z.string(), // Maps to "name" in your DB
+        label: z.string(),
         nutrients: z.object({
           ENERC_KCAL: z.number(),
           PROCNT: z.number(),

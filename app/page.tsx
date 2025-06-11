@@ -1,7 +1,13 @@
+import Features from "@/components/Features";
+import Hero from "@/components/Hero";
+import HowToPlay from "@/components/HowToPlay";
+
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-2xl font-bold">Feliks the calorie guessing game</h1>
-    </div>
+    <>
+      <Hero />
+      <Features />
+      <HowToPlay />
+    </>
   );
 }

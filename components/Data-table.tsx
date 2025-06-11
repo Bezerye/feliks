@@ -23,13 +23,15 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { DataTablePagination } from "./DataTablePagination";
 import { DefaultColumn } from "./EditableColumn";
 import { EditingDataSchema, type EditingDataType } from "@/lib/zodSchemas";
+import { Skeleton } from "./ui/skeleton";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  loading?: boolean;
 }
 
 declare module "@tanstack/react-table" {
@@ -43,6 +45,7 @@ declare module "@tanstack/react-table" {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  loading,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -64,10 +67,30 @@ export function DataTable<TData, TValue>({
     }
   };
 
+  // Set the loading state for the skeleton loader
+  const tableData = useMemo(
+    () => (loading ? Array(10).fill({}) : data),
+    [loading, data]
+  );
+  const tableColumns = useMemo(
+    () =>
+      loading
+        ? columns.map((column) => ({
+            ...column,
+            cell: () => {
+              if (column.id !== "actions") {
+                return <Skeleton className="w-[100px] h-[30px] rounded-full" />;
+              }
+            },
+          }))
+        : columns,
+    [loading, columns]
+  );
+
   const table = useReactTable({
-    data,
+    data: tableData,
     defaultColumn: DefaultColumn as Partial<ColumnDef<TData, unknown>>,
-    columns,
+    columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
