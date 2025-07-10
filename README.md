@@ -72,6 +72,7 @@ npm run dev
 - User Profiles: Create personal accounts to track progress
 - Leaderboards: Compete with others on accuracy and speed
 - Food Categories: Specialized challenges for different food groups
+- Food Icons: Icons for foods
 - Achievements: Unlock badges and rewards for nutritional knowledge
 - Social Sharing: Challenge friends and share results
 

@@ -1,6 +1,7 @@
 import { HeartIcon, PlayIcon, UsersIcon, ZapIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -26,8 +27,13 @@ export default function Hero() {
                 size="lg"
                 className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
               >
-                <PlayIcon className="mr-2 h-4 w-4" />
-                Start Playing
+                <Link
+                  href="/play"
+                  className="flex items-center gap-2 text-white"
+                >
+                  <PlayIcon className="mr-2 h-4 w-4" />
+                  Start Playing
+                </Link>
               </Button>
               <Button
                 variant="outline"
