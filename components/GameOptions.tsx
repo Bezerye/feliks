@@ -1,10 +1,16 @@
 import { useGame } from "@/hooks/useGame";
 import { Button } from "./ui/button";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { checkAnswer } from "@/actions/checkAnswer";
 
-export default function GameOptions({}) {
-  const [correctAnswer, setCorrectAnswer] = useState<number | null>(null);
+export default function GameOptions({
+  correctAnswerFromParent,
+}: {
+  correctAnswerFromParent?: number | null;
+}) {
+  const [correctAnswer, setCorrectAnswer] = useState<number | null>(
+    correctAnswerFromParent || null
+  );
   const [isPending, startTransition] = useTransition();
   const {
     sessionId,
@@ -16,6 +22,11 @@ export default function GameOptions({}) {
     currentQuestion,
     selectedAnswer,
   } = useGame();
+
+  useEffect(() => {
+    setCorrectAnswer(correctAnswerFromParent || null);
+  }, [correctAnswerFromParent]);
+
   const handleAnswerSelect = async (answer: number) => {
     if (selectedAnswer !== null) return; // Already answered
 
@@ -78,8 +89,8 @@ function OptionButton({
   // TODO : maybe use border instead of background color
   let color: string = "";
   switch (true) {
-    case correctAnswer === option:
-      color = "bg-green-500 text-white";
+    case correctAnswer === option && showAnswer:
+      color = "bg-green-500 text-white hover:bg-green-600";
       break;
     case selectedOption !== null && selectedOption !== correctAnswer:
       color = "bg-red-500 text-white";

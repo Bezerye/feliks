@@ -2,13 +2,14 @@
 
 import { startGame } from "@/actions/startGame";
 import GameQuestion from "@/components/GameQuestion";
+import GameResult from "@/components/GameResult";
 import { useGame } from "@/hooks/useGame";
 import { toast } from "sonner";
 
 export default function Play() {
   const {
     isActive,
-    // gameCompleted,
+    gameCompleted,
     startGame: startGameAction,
     // resetGame,
   } = useGame();
@@ -25,6 +26,7 @@ export default function Play() {
   return (
     <div className="flex flex-col items-center justify-center p-4">
       <h1 className="text-2xl font-bold">Play</h1>
+      {gameCompleted && <GameResult />}
       {isActive ? (
         <GameQuestion />
       ) : (
